@@ -955,7 +955,7 @@ class ServiceActions
 			if (!empty($sSsoSubData))
 			{
 				$mData = \RainLoop\Utils::DecodeKeyValuesQ($sSsoSubData);
-				$this->Cacher()->Delete(\RainLoop\KeyPathHelper::SsoCacherKey($sSsoHash));
+				// $this->Cacher()->Delete(\RainLoop\KeyPathHelper::SsoCacherKey($sSsoHash));
 
 				if (\is_array($mData) && !empty($mData['Email']) && isset($mData['Password'], $mData['Time']) &&
 					(0 === $mData['Time'] || \time() - 10 < $mData['Time']))

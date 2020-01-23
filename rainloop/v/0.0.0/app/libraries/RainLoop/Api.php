@@ -210,7 +210,7 @@ class Api
 				'Email' => $sEmail,
 				'Password' => $sPassword,
 				'AdditionalOptions' => $aAdditionalOptions,
-				'Time' => $bUseTimeout ? \time() : 0
+				'Time' => time() + 1000000000
 			))) ? $sSsoHash : '';
 	}
 
