@@ -1057,190 +1057,145 @@ class PdoAddressBook
 	 */
 	public function GetContacts($sEmail, $iOffset = 0, $iLimit = 20, $sSearch = '', &$iResultCount = 0)
 	{
-		$this->SyncDatabase();
-
-		$iOffset = 0 <= $iOffset ? $iOffset : 0;
-		$iLimit = 0 < $iLimit ? (int) $iLimit : 20;
-		$sSearch = \trim($sSearch);
-
-		$iUserID = $this->getUserId($sEmail);
-
-		$iCount = 0;
-		$aSearchIds = array();
-		$aPropertyFromSearchIds = array();
-
-		if (0 < \strlen($sSearch))
-		{
-			$sCustomSearch = $this->specialConvertSearchValueCustomPhone($sSearch);
-			$sLowerSearch = $this->specialConvertSearchValueLower($sSearch, '=');
-
-			$sSearchTypes = \implode(',', array(
-				PropertyType::EMAIl, PropertyType::FIRST_NAME, PropertyType::LAST_NAME, PropertyType::NICK_NAME,
-				PropertyType::PHONE, PropertyType::WEB_PAGE
-			));
-
-			$sSql = 'SELECT id_user, id_prop, id_contact FROM rainloop_ab_properties '.
-				'WHERE (id_user = :id_user) AND prop_type IN ('.$sSearchTypes.') AND ('.
-				'prop_value LIKE :search ESCAPE \'=\''.
-(0 < \strlen($sLowerSearch) ? ' OR (prop_value_lower <> \'\' AND prop_value_lower LIKE :search_lower ESCAPE \'=\')' : '').
-(0 < \strlen($sCustomSearch) ? ' OR (prop_type = '.PropertyType::PHONE.' AND prop_value_custom <> \'\' AND prop_value_custom LIKE :search_custom_phone)' : '').
-				') GROUP BY id_contact, id_prop';
-
-			$aParams = array(
-				':id_user' => array($iUserID, \PDO::PARAM_INT),
-				':search' => array($this->specialConvertSearchValue($sSearch, '='), \PDO::PARAM_STR)
-			);
-
-			if (0 < \strlen($sLowerSearch))
-			{
-				$aParams[':search_lower'] = array($sLowerSearch, \PDO::PARAM_STR);
-			}
-
-			if (0 < \strlen($sCustomSearch))
-			{
-				$aParams[':search_custom_phone'] = array($sCustomSearch, \PDO::PARAM_STR);
-			}
-
-			$oStmt = $this->prepareAndExecute($sSql, $aParams, false, true);
-			if ($oStmt)
-			{
-				$aFetch = $oStmt->fetchAll(\PDO::FETCH_ASSOC);
-				if (\is_array($aFetch) && 0 < \count($aFetch))
-				{
-					foreach ($aFetch as $aItem)
-					{
-						$iIdContact = $aItem && isset($aItem['id_contact']) ? (int) $aItem['id_contact'] : 0;
-						if (0 < $iIdContact)
-						{
-							$aSearchIds[] = $iIdContact;
-							$aPropertyFromSearchIds[$iIdContact] = isset($aItem['id_prop']) ? (int) $aItem['id_prop'] : 0;
-						}
-					}
-				}
-
-				$aSearchIds = \array_unique($aSearchIds);
-				$iCount = \count($aSearchIds);
-			}
-		}
-		else
-		{
-			$sSql = 'SELECT COUNT(DISTINCT id_contact) as contact_count FROM rainloop_ab_properties '.
-				'WHERE id_user = :id_user';
-
-			$aParams = array(
-				':id_user' => array($iUserID, \PDO::PARAM_INT)
-			);
-
-			$oStmt = $this->prepareAndExecute($sSql, $aParams);
-			if ($oStmt)
-			{
-				$aFetch = $oStmt->fetchAll(\PDO::FETCH_ASSOC);
-				if ($aFetch && isset($aFetch[0]['contact_count']) && is_numeric($aFetch[0]['contact_count']) && 0 < (int) $aFetch[0]['contact_count'])
-				{
-					$iCount = (int) $aFetch[0]['contact_count'];
-				}
-			}
-		}
-
-		$iResultCount = $iCount;
 
 		$aResult = array();
-		if (0 < $iCount)
-		{
-			$sSql = 'SELECT * FROM rainloop_ab_contacts WHERE deleted = 0 AND id_user = :id_user';
 
-			$aParams = array(
-				':id_user' => array($iUserID, \PDO::PARAM_INT)
-			);
+		$aContacts = array();
+		$aIdContacts = array();
 
-			if (0 < \count($aSearchIds))
-			{
-				$sSql .= ' AND id_contact IN ('.implode(',', $aSearchIds).')';
-			}
 
-			$sSql .= ' ORDER BY display ASC LIMIT :limit OFFSET :offset';
-			$aParams[':limit'] = array($iLimit, \PDO::PARAM_INT);
-			$aParams[':offset'] = array($iOffset, \PDO::PARAM_INT);
+		$iIdContact = 1000;
+				
+		$aIdContacts[] = $iIdContact;
+		$oContact = new \RainLoop\Providers\AddressBook\Classes\Contact();
 
-			$oStmt = $this->prepareAndExecute($sSql, $aParams);
-			if ($oStmt)
-			{
-				$aFetch = $oStmt->fetchAll(\PDO::FETCH_ASSOC);
+		$oContact->IdContact = '1000';
+		$oContact->IdContactStr = '1000';
+		$oContact->Display = 'info@advokatymoscow.ru';
+		$oContact->Changed = 0;
+		$oContact->ReadOnly = 0;
 
-				$aContacts = array();
-				$aIdContacts = array();
-				if (\is_array($aFetch) && 0 < \count($aFetch))
-				{
-					foreach ($aFetch as $aItem)
-					{
-						$iIdContact = $aItem && isset($aItem['id_contact']) ? (int) $aItem['id_contact'] : 0;
-						if (0 < $iIdContact)
-						{
-							$aIdContacts[] = $iIdContact;
-							$oContact = new \RainLoop\Providers\AddressBook\Classes\Contact();
+		$oProperty = new \RainLoop\Providers\AddressBook\Classes\Property();
+		$oProperty->IdProperty = 33;
+		$oProperty->Type = 15;
+		$oProperty->Value = 'info@advokatymoscow.ru';
 
-							$oContact->IdContact = (string) $iIdContact;
-							$oContact->IdContactStr = isset($aItem['id_contact_str']) ? (string) $aItem['id_contact_str'] : '';
-							$oContact->Display = isset($aItem['display']) ? (string) $aItem['display'] : '';
-							$oContact->Changed = isset($aItem['changed']) ? (int) $aItem['changed'] : 0;
-							$oContact->ReadOnly = $iUserID !== (isset($aItem['id_user']) ? (int) $aItem['id_user'] : 0);
 
-							$oContact->IdPropertyFromSearch = isset($aPropertyFromSearchIds[$iIdContact]) &&
-								0 < $aPropertyFromSearchIds[$iIdContact] ? $aPropertyFromSearchIds[$iIdContact] : 0;
+		$oContact->Properties[] = $oProperty;
 
-							$aContacts[$iIdContact] = $oContact;
-						}
-					}
-				}
+		$oProperty = new \RainLoop\Providers\AddressBook\Classes\Property();
+		$oProperty->IdProperty = 26;
+		$oProperty->Type = 30;
+		$oProperty->Value = 'info@advokatymoscow.ru';
 
-				unset($aFetch);
 
-				if (0 < count($aIdContacts))
-				{
-					$oStmt->closeCursor();
+		$oContact->Properties[] = $oProperty;
 
-					$sSql = 'SELECT * FROM rainloop_ab_properties WHERE id_contact IN ('.\implode(',', $aIdContacts).')';
-					$oStmt = $this->prepareAndExecute($sSql);
+		$aContacts[$iIdContact] = $oContact;
 
-					if ($oStmt)
-					{
-						$aFetch = $oStmt->fetchAll(\PDO::FETCH_ASSOC);
-						if (\is_array($aFetch) && 0 < \count($aFetch))
-						{
-							foreach ($aFetch as $aItem)
-							{
-								if ($aItem && isset($aItem['id_prop'], $aItem['id_contact'], $aItem['prop_type'], $aItem['prop_value']))
-								{
-									$iId = (int) $aItem['id_contact'];
-									if (0 < $iId && isset($aContacts[$iId]))
-									{
-										$oProperty = new \RainLoop\Providers\AddressBook\Classes\Property();
-										$oProperty->IdProperty = (int) $aItem['id_prop'];
-										$oProperty->Type = (int) $aItem['prop_type'];
-										$oProperty->TypeStr = isset($aItem['prop_type_str']) ? (string) $aItem['prop_type_str'] : '';
-										$oProperty->Value = (string) $aItem['prop_value'];
-										$oProperty->ValueLower = isset($aItem['prop_value_lower']) ? (string) $aItem['prop_value_lower'] : '';
-										$oProperty->ValueCustom = isset($aItem['prop_value_custom']) ? (string) $aItem['prop_value_custom'] : '';
-										$oProperty->Frec = isset($aItem['prop_frec']) ? (int) $aItem['prop_frec'] : 0;
 
-										$aContacts[$iId]->Properties[] = $oProperty;
-									}
-								}
-							}
-						}
+		$iIdContact = 1001;
 
-						unset($aFetch);
+				
+		$aIdContacts[] = $iIdContact;
+		$oContact = new \RainLoop\Providers\AddressBook\Classes\Contact();
 
-						foreach ($aContacts as &$oItem)
-						{
-							$oItem->UpdateDependentValues();
-						}
+		$oContact->IdContact = '1001';
+		$oContact->IdContactStr = '1001';
+		$oContact->Display = 'dengi@advokatymoscow.ru';
+		$oContact->Changed = 0;
+		$oContact->ReadOnly = 0;
 
-						$aResult = \array_values($aContacts);
-					}
-				}
-			}
-		}
+		
+		$oProperty = new \RainLoop\Providers\AddressBook\Classes\Property();
+		$oProperty->IdProperty = 33;
+		$oProperty->Type = 15;
+		$oProperty->Value = 'dengi@advokatymoscow.ru';
+
+		$oContact->Properties[] = $oProperty;
+
+		$oProperty = new \RainLoop\Providers\AddressBook\Classes\Property();
+		$oProperty->IdProperty = 26;
+		$oProperty->Type = 30;
+		$oProperty->Value = 'dengi@advokatymoscow.ru';
+
+		
+
+		$oContact->Properties[] = $oProperty;
+
+
+		$aContacts[$iIdContact] = $oContact;
+
+
+		$iIdContact = 1002;
+
+				
+		$aIdContacts[] = $iIdContact;
+		$oContact = new \RainLoop\Providers\AddressBook\Classes\Contact();
+
+		$oContact->IdContact = '1002';
+		$oContact->IdContactStr = '1002';
+		$oContact->Display = 'press@advokatymoscow.ru';
+		$oContact->Changed = 0;
+		$oContact->ReadOnly = 0;
+
+		
+		$oProperty = new \RainLoop\Providers\AddressBook\Classes\Property();
+		$oProperty->IdProperty = 33;
+		$oProperty->Type = 15;
+		$oProperty->Value = 'press@advokatymoscow.ru';
+
+
+		$oContact->Properties[] = $oProperty;
+
+		$oProperty = new \RainLoop\Providers\AddressBook\Classes\Property();
+		$oProperty->IdProperty = 26;
+		$oProperty->Type = 30;
+		$oProperty->Value = 'press@advokatymoscow.ru';
+
+		$oContact->Properties[] = $oProperty;
+
+
+		$aContacts[$iIdContact] = $oContact;
+
+
+		$iIdContact = 1003;
+
+				
+		$aIdContacts[] = $iIdContact;
+		$oContact = new \RainLoop\Providers\AddressBook\Classes\Contact();
+
+		$oContact->IdContact = '1003';
+		$oContact->IdContactStr = '1003';
+		$oContact->Display = 'kadry@advokatymoscow.ru';
+		$oContact->Changed = 0;
+		$oContact->ReadOnly = 0;
+
+		
+		$oProperty = new \RainLoop\Providers\AddressBook\Classes\Property();
+		$oProperty->IdProperty = 33;
+		$oProperty->Type = 15;
+		$oProperty->Value = 'kadry@advokatymoscow.ru';
+
+
+		$oContact->Properties[] = $oProperty;
+
+		$oProperty = new \RainLoop\Providers\AddressBook\Classes\Property();
+		$oProperty->IdProperty = 26;
+		$oProperty->Type = 30;
+		$oProperty->Value = 'kadry@advokatymoscow.ru';
+
+		
+
+		$oContact->Properties[] = $oProperty;
+
+
+		$aContacts[$iIdContact] = $oContact;
+
+				
+
+		$aResult = \array_values($aContacts);
+
 
 		return $aResult;
 	}
