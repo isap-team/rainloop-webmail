@@ -1,3 +1,10 @@
+<style>
+	#btnsendemail::after {
+	  content: "\0412\044b\0431\0440\0430\0442\044c";
+	  white-space:nowrap;
+	}
+</style>
+
 <div class="popups">
 	<div class="modal hide b-contacts-content" data-bind="modal: modalVisibility">
 		<div class="modal-header b-header-toolbar g-ui-user-select-none">
@@ -9,7 +16,7 @@
 				
 				<div class="btn-group">
 					<a class="btn single btn-success button-new-message" data-bind="command: newMessageCommand">
-						<i class="icon-mail icon-white"></i>
+						<span id="btnsendemail"></span>
 					</a>
 				</div>
 

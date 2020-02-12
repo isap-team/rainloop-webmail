@@ -1,5 +1,19 @@
 <style>
+
+	#choosebtn::after {
+	  content: "\0412\044b\0431\0435\0440\0438\0442\0435\020\043f\043e\043b\0443\0447\0430\0435\0442\0435\043b\044f";
+	  white-space:nowrap;
+
+	}
+
 	.g-ui-table .ui-autocomplete-input {
+		
+	}
+
+	#addrbook .inputosaurus-container.ui-droppable {
+		position: relative;
+    	align-items: flex-end;
+    	justify-content: flex-end;
 	}
 </style>
 <div class="popups">
@@ -89,9 +103,7 @@
 									</div>
 									<div class="btn-group pull-right">&nbsp;</div>
 									<div class="btn-group pull-right">
-										<a class="btn single" data-tooltip-join="top" data-bind="visible: allowContacts, command: contactsCommand, tooltip: 'FOLDER_LIST/BUTTON_CONTACTS'">
-											<i class="icon-address-book"></i>
-										</a>
+										
 									</div>
 									<div class="btn-group pull-right">&nbsp;</div>
 								</div>
@@ -107,8 +119,28 @@
 										data-bind="tooltipErrorTip: emptyToErrorTooltip"></span>
 								</label>
 							</div>
-							<div class="e-cell e-value">
-								<input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-bind="emailsTags: to, emailsTagsFocus: to.focused, autoCompleteSource: emailsSource" />
+							<div id="addrbook" class="e-cell e-value" 
+
+								style="display: flex;">
+								
+
+								<a
+
+								style=" position: relative; margin-right: 10px; "
+
+								class="btn single" data-tooltip-join="top" data-bind="visible: allowContacts, command: contactsCommand, tooltip: 'FOLDER_LIST/BUTTON_CONTACTS'">
+											
+										<span id="choosebtn"></span>
+
+
+										</a>
+
+
+								<input 
+
+								
+
+								type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-bind="emailsTags: to, emailsTagsFocus: to.focused, autoCompleteSource: emailsSource" />
 							</div>
 						</div>
 						<div class="e-row cc-row" data-bind="visible: showCc">
