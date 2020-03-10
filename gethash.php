@@ -2,7 +2,7 @@
 
 // Enable RainLoop Api and include index file 
 $_ENV['RAINLOOP_INCLUDE_AS_API'] = true;
-include '/var/www/apm-mail.isap.team/index.php';
+include '//index.php';
 
 //
 // Get sso hash
