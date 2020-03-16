@@ -15,6 +15,18 @@
     	align-items: flex-end;
     	justify-content: flex-end;
 	}
+
+	#addrbook .inputosaurus-container.ui-droppable {
+		position: relative;
+    	align-items: flex-end;
+    	justify-content: flex-end;
+	}
+
+
+	#addrbook input {
+		pointer-events: none!important;
+	}
+
 </style>
 <div class="popups">
 	<div class="modal hide b-compose" data-backdrop="static" data-bind="modal: modalVisibility, css: {'loading': saving() || sending()}">
@@ -140,7 +152,7 @@
 
 								
 
-								type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-bind="emailsTags: to, emailsTagsFocus: to.focused, autoCompleteSource: emailsSource" />
+								type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-bind="emailsTags: to" />
 							</div>
 						</div>
 						<div class="e-row cc-row" data-bind="visible: showCc">
