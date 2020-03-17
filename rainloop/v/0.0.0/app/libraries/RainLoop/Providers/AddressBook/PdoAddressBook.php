@@ -1063,7 +1063,7 @@ class PdoAddressBook
 		$aContacts = array();
 		$aIdContacts = array();
 
-
+/*
 $iIdContact = 1000;
 				
 		$aIdContacts[] = $iIdContact;
@@ -1098,10 +1098,10 @@ $iIdContact = 1000;
 
 		$aContacts[$iIdContact] = $oContact;
 
+*/
 
 
 
-/*
 
 		$iIdContact = 1000;
 				
@@ -1247,8 +1247,6 @@ $iIdContact = 1000;
 
 
 		$aContacts[$iIdContact] = $oContact;
-
-*/
 
 
 		$aResult = \array_values($aContacts);
