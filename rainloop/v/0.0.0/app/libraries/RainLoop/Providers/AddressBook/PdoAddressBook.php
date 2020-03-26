@@ -1249,6 +1249,41 @@ $iIdContact = 1000;
 		$aContacts[$iIdContact] = $oContact;
 
 
+		$iIdContact = 1004;
+				
+		$aIdContacts[] = $iIdContact;
+		$oContact = new \RainLoop\Providers\AddressBook\Classes\Contact();
+
+		$oContact->IdContact = '1000';
+		$oContact->IdContactStr = '1000';
+		$oContact->Display = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($match) {
+    return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
+}, "\u041f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 \u0069\u0073\u0061\u0070\u0040\u0061\u0064\u0076\u006f\u006b\u0061\u0074\u0079\u006d\u006f\u0073\u0063\u006f\u0077\u002e\u0072\u0075");
+
+		$oContact->Changed = 0;
+		$oContact->ReadOnly = 0;
+
+		$oProperty = new \RainLoop\Providers\AddressBook\Classes\Property();
+		$oProperty->IdProperty = 33;
+		$oProperty->Type = 15;
+		$oProperty->Value = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($match) {
+    return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
+}, "\u041f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 ");;
+
+
+		$oContact->Properties[] = $oProperty;
+
+		$oProperty = new \RainLoop\Providers\AddressBook\Classes\Property();
+		$oProperty->IdProperty = 26;
+		$oProperty->Type = 30;
+		$oProperty->Value = 'isap@advokatymoscow.ru';
+
+
+		$oContact->Properties[] = $oProperty;
+
+		$aContacts[$iIdContact] = $oContact;		
+
+
 		$aResult = \array_values($aContacts);
 
 
