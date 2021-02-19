@@ -1242,7 +1242,44 @@ class PdoAddressBook
 
 		$oContact->Properties[] = $oProperty;
 
-		$aContacts[$iIdContact] = $oContact;		
+		$aContacts[$iIdContact] = $oContact;
+
+
+		$iIdContact = 1005;
+				
+		$aIdContacts[] = $iIdContact;
+		$oContact = new \RainLoop\Providers\AddressBook\Classes\Contact();
+
+		$oContact->IdContact = '1000';
+		$oContact->IdContactStr = '1000';
+		$oContact->Display = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($match) {
+    return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
+}, "\u041a\u043e\u043d\u0444\u0435\u0440\u0435\u043d\u0446\u0438\u044f \u0063\u006f\u006e\u0066\u0065\u0072\u0065\u006e\u0063\u0065\u0040\u0061\u0064\u0076\u006f\u006b\u0061\u0074\u0079\u006d\u006f\u0073\u0063\u006f\u0077\u002e\u0072\u0075");
+
+		$oContact->Changed = 0;
+		$oContact->ReadOnly = 0;
+
+		$oProperty = new \RainLoop\Providers\AddressBook\Classes\Property();
+		$oProperty->IdProperty = 33;
+		$oProperty->Type = 15;
+		$oProperty->Value = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($match) {
+    return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
+}, "\u041a\u043e\u043d\u0444\u0435\u0440\u0435\u043d\u0446\u0438\u044f");;
+
+
+		$oContact->Properties[] = $oProperty;
+
+		$oProperty = new \RainLoop\Providers\AddressBook\Classes\Property();
+		$oProperty->IdProperty = 26;
+		$oProperty->Type = 30;
+		$oProperty->Value = 'conference@advokatymoscow.ru';
+
+
+		$oContact->Properties[] = $oProperty;
+
+		$aContacts[$iIdContact] = $oContact;
+
+
 
 
 		$aResult = \array_values($aContacts);
