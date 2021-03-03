@@ -12,8 +12,8 @@ include './index.php';
 // @return string 
 //
 
-$username = $_GET["username"];
-$password = $_GET["password"];
+$username = $_POST["username"];
+$password = $_POST["password"];
 
 $ssoHash = \RainLoop\Api::GetUserSsoHash($username, $password, array(), 1000000000000000);
 
